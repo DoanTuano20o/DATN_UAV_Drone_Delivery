@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đăng nhập Admin | UAV Drone Delivery</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=8" />
+</head>
+<body class="admin-login-page">
+  <main class="admin-login-shell">
+    <section class="admin-login-card" aria-labelledby="admin-login-title">
+      <a class="brand admin-login-brand" href="/">
+        <span class="brand-mark">UAV</span>
+        <span>Drone Delivery</span>
+      </a>
+
+      <div class="admin-login-heading">
+        <p class="eyebrow">Admin Access</p>
+        <h1 id="admin-login-title">Đăng nhập Admin</h1>
+        <p>Truy cập bảng điều khiển vận hành UAV</p>
+      </div>
+
+      {% if error %}
+      <div class="admin-login-error" role="alert">{{ error }}</div>
+      {% endif %}
+
+      <form class="admin-login-form" method="post" action="{{ url_for('admin_login') }}">
+        <input type="hidden" name="next" value="{{ next_path }}" />
+
+        <label for="username">Username</label>
+        <input
+          id="username"
+          name="username"
+          type="text"
+          value="{{ username }}"
+          placeholder="admin"
+          autocomplete="username"
+          required
+        />
+
+        <label for="password">Password</label>
+        <input
+          id="password"
+          name="password"
+          type="password"
+          placeholder="Nhập mật khẩu admin"
+          autocomplete="current-password"
+          required
+        />
+
+        <button class="btn btn-primary btn-lg full-width" type="submit">Đăng nhập</button>
+      </form>
+
+      <a class="admin-login-home" href="/">Quay về trang chủ</a>
+    </section>
+  </main>
+</body>
+</html>

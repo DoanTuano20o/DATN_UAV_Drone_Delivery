@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DATN UAV Admin Dashboard</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=4" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}?v=5" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="dashboard-page">
+  <aside class="app-sidebar">
+    <a class="brand dashboard-brand" href="/">
+      <span class="brand-mark">UAV</span>
+      <span>Drone Delivery</span>
+    </a>
+    <nav class="side-nav">
+      <a href="#dashboard-overview" class="side-link active">Dashboard</a>
+      <a href="#mission-panel" class="side-link">Mission</a>
+      <a href="#map-panel" class="side-link">Tracking</a>
+      <a href="#log-panel" class="side-link">Logs</a>
+      <a href="#system-panel" class="side-link">Settings</a>
+    </nav>
+    <div class="sidebar-footer">
+      <a href="/tracking" class="btn btn-ghost full-width" data-ripple>Customer Tracking</a>
+      <a href="/" class="btn btn-primary full-width" data-ripple>Landing Page</a>
+      <a href="/admin/logout" class="btn btn-ghost full-width" data-ripple>Đăng xuất</a>
+    </div>
+  </aside>
+
+  <div class="dashboard-shell">
+    <header class="dashboard-topbar">
+      <div class="topbar-title">
+        <p class="eyebrow">Admin Dashboard</p>
+        <h1>UAV Mission Control</h1>
+        <div class="readiness-strip" id="readiness-strip" data-state="waiting">
+          <span class="readiness-dot"></span>
+          <strong id="readiness-state">Waiting for telemetry</strong>
+          <span id="readiness-detail">Đang đồng bộ trạng thái vận hành.</span>
+        </div>
+      </div>
+      <div class="topbar-metrics">
+        <div id="server-status" class="metric-pill status-danger">
+          <span class="pulse-dot"></span>
+          <strong>Server starting...</strong>
+        </div>
+        <div class="metric-pill system-pill" data-status-mirror="fc">
+          <span>FC</span>
+          <strong id="top-fc">WAIT</strong>
+        </div>
+        <div class="metric-pill system-pill" data-status-mirror="camera">
+          <span>Camera</span>
+          <strong id="top-camera">WAIT</strong>
+        </div>
+        <div class="metric-pill system-pill" data-status-mirror="ros2">
+          <span>ROS2</span>
+          <strong id="top-ros2">WAIT</strong>
+        </div>
+        <div class="metric-pill system-pill" data-status-mirror="vision">
+          <span>Vision</span>
+          <strong id="top-vision">WAIT</strong>
+        </div>
+        <div class="metric-pill system-pill" data-status-mirror="socket">
+          <span>Socket</span>
+          <strong id="top-socket">WAIT</strong>
+        </div>
+        <div class="metric-pill">
+          <span>GPS</span>
+          <strong id="top-gps">N/A</strong>
+        </div>
+        <div class="metric-pill">
+          <span>Battery</span>
+          <strong id="top-battery">N/A</strong>
+        </div>
+        <div class="metric-pill">
+          <span>Mode</span>
+          <strong id="top-mode">N/A</strong>
+        </div>
+        <div class="metric-pill">
+          <span>Armed</span>
+          <strong id="top-armed">N/A</strong>
+        </div>
+        <div class="metric-pill">
+          <span>Time</span>
+          <strong data-clock>--:--:--</strong>
+        </div>
+        <button id="focus-view-btn" class="btn btn-ghost focus-view-btn" type="button" data-ripple>Focus View</button>
+      </div>
+    </header>
+
+    <main id="dashboard-overview" class="dashboard-grid">
+      <section id="camera-panel" class="dash-card camera-panel primary-observer-card" data-animate>
+        <div class="card-head">
+          <div>
+            <p class="panel-kicker">Live Camera</p>
+            <h2>Annotated Vision Stream</h2>
+            <span>Quan sát marker, payload zone và trạng thái hạ cánh chính xác.</span>
+          </div>
+          <div class="camera-actions">
+            <button id="camera-toggle-btn" class="icon-btn" type="button" title="Pause or resume camera stream" data-ripple>Pause Camera</button>
+            <button id="camera-reconnect-btn" class="icon-btn" type="button" title="Reconnect camera stream" data-ripple>Reconnect</button>
+            <button id="fullscreen-camera-btn" class="icon-btn" type="button" title="Fullscreen camera" data-ripple>Full</button>
+          </div>
+        </div>
+        <div class="camera-frame" id="camera-frame">
+          <img id="camera-stream" data-stream-url="/video_feed" alt="Camera stream" />
+          <div id="camera-status-badge" class="camera-status-badge" data-state="idle">
+            <span class="pulse-dot"></span>
+            <span id="camera-status-text">Starting camera...</span>
+          </div>
+          <div class="camera-overlay">
+            <span id="mini-mode">Mode: N/A</span>
+            <span id="mini-alt">Alt: N/A</span>
+            <span id="mini-speed">Speed: N/A</span>
+            <span id="mini-battery">Battery: N/A</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="map-panel" class="dash-card map-panel primary-observer-card" data-animate>
+        <div class="card-head">
+          <div>
+            <p class="panel-kicker">Navigation Map</p>
+            <h2>Mission Tracking</h2>
+            <span>Click trên bản đồ để gửi mission goal như logic hiện tại.</span>
+          </div>
+          <button id="clear-waypoints-btn" class="btn btn-ghost" type="button" data-ripple>Clear Goal</button>
+        </div>
+        <div class="map-operation-summary">
+          <article>
+            <span>Drone Position</span>
+            <strong id="map-drone-position">N/A</strong>
+          </article>
+          <article>
+            <span>Mission Goal</span>
+            <strong id="map-goal-position">N/A</strong>
+          </article>
+          <article>
+            <span>Last Update</span>
+            <strong id="map-last-update">N/A</strong>
+          </article>
+        </div>
+        <div id="map" class="mission-map"></div>
+        <div class="map-lists">
+          <div>
+            <span>Mission Goal</span>
+            <ul id="waypoint-list" class="compact-list"></ul>
+          </div>
+          <div>
+            <span>GPS Stations</span>
+            <ul id="station-list" class="compact-list"></ul>
+          </div>
+        </div>
+      </section>
+
+      <section class="dash-card telemetry-panel" data-animate>
+        <div class="card-head">
+          <div>
+            <p class="panel-kicker">Flight Controller</p>
+            <h2>Compact Telemetry</h2>
+          </div>
+          <span class="live-chip"><span class="pulse-dot"></span>Live</span>
+        </div>
+        <div class="telemetry-grid">
+          <article class="telemetry-widget">
+            <span>Mode</span>
+            <strong id="mode">N/A</strong>
+          </article>
+          <article class="telemetry-widget">
+            <span>Armed</span>
+            <strong id="armed">N/A</strong>
+          </article>
+          <article class="telemetry-widget">
+            <span>Battery</span>
+            <strong id="battery">N/A</strong>
+            <div class="battery-meter" aria-hidden="true"><span id="battery-fill"></span></div>
+          </article>
+          <article class="telemetry-widget">
+            <span>GPS Fix</span>
+            <strong id="gps-fix">N/A</strong>
+            <em id="gps-quality" class="quality-badge">Unknown</em>
+          </article>
+          <article class="telemetry-widget">
+            <span>Satellites</span>
+            <strong id="sats">N/A</strong>
+          </article>
+          <article class="telemetry-widget">
+            <span>Altitude</span>
+            <strong id="alt">N/A</strong>
+          </article>
+          <article class="telemetry-widget">
+            <span>Speed</span>
+            <strong id="speed">N/A</strong>
+          </article>
+          <article class="telemetry-widget wide">
+            <span>Lat / Lon</span>
+            <strong id="latlon">N/A</strong>
+          </article>
+        </div>
+      </section>
+
+      <section id="mission-panel" class="dash-card mission-panel" data-animate>
+        <div class="card-head">
+          <div>
+            <p class="panel-kicker">Autonomous Delivery</p>
+            <h2>Mission State & Marker Alignment</h2>
+          </div>
+          <span id="mission-phase" class="phase-chip">Waiting</span>
+        </div>
+        <ol class="mission-timeline" aria-label="Mission timeline">
+          <li data-mission-step="TAKEOFF"><span>TAKEOFF</span></li>
+          <li data-mission-step="HOLD"><span>HOLD</span></li>
+          <li data-mission-step="GOTO"><span>GOTO</span></li>
+          <li data-mission-step="SEARCH_BIG"><span>SEARCH BIG</span></li>
+          <li data-mission-step="ALIGN_BIG"><span>ALIGN BIG</span></li>
+          <li data-mission-step="LOCK_BIG"><span>LOCK BIG</span></li>
+          <li data-mission-step="DESCEND"><span>DESCEND</span></li>
+          <li data-mission-step="SEARCH_SMALL"><span>SEARCH SMALL</span></li>
+          <li data-mission-step="ALIGN_SMALL"><span>ALIGN SMALL</span></li>
+          <li data-mission-step="LAND"><span>LAND</span></li>
+          <li data-mission-step="DROP"><span>DROP</span></li>
+        </ol>
+        <div class="progress-shell">
+          <div id="mission-progress-fill" class="progress-fill"></div>
+        </div>
+        <div class="mission-grid mission-summary-grid">
+          <div><span>State</span><strong id="mission-state">N/A</strong></div>
+          <div><span>Mode</span><strong id="mission-mode">N/A</strong></div>
+          <div><span>Armed</span><strong id="mission-armed">N/A</strong></div>
+          <div class="mission-goal"><span>Goal</span><strong id="mission-goal">N/A</strong></div>
+        </div>
+        <div class="marker-alignment-grid">
+          <article class="marker-card" data-marker-card="big">
+            <div class="marker-card-head">
+              <div>
+                <span>Big Marker</span>
+                <strong id="big-marker-seen">N/A</strong>
+              </div>
+              <em>ID <b id="big-marker-id">N/A</b></em>
+            </div>
+            <div class="alignment-scope">
+              <span class="alignment-axis x-axis"></span>
+              <span class="alignment-axis y-axis"></span>
+              <span id="big-align-dot" class="alignment-dot"></span>
+            </div>
+            <dl class="marker-metrics">
+              <div><dt>Err X</dt><dd id="big-err-x">N/A</dd></div>
+              <div><dt>Err Y</dt><dd id="big-err-y">N/A</dd></div>
+              <div><dt>Z</dt><dd id="big-z">N/A</dd></div>
+              <div><dt>Distance</dt><dd id="big-distance">N/A</dd></div>
+            </dl>
+          </article>
+          <article class="marker-card" data-marker-card="small">
+            <div class="marker-card-head">
+              <div>
+                <span>Small Marker</span>
+                <strong id="small-marker-seen">N/A</strong>
+              </div>
+              <em>ID <b id="small-marker-id">N/A</b></em>
+            </div>
+            <div class="alignment-scope">
+              <span class="alignment-axis x-axis"></span>
+              <span class="alignment-axis y-axis"></span>
+              <span id="small-align-dot" class="alignment-dot"></span>
+            </div>
+            <dl class="marker-metrics">
+              <div><dt>Err X</dt><dd id="small-err-x">N/A</dd></div>
+              <div><dt>Err Y</dt><dd id="small-err-y">N/A</dd></div>
+              <div><dt>Z</dt><dd id="small-z">N/A</dd></div>
+              <div><dt>Distance</dt><dd id="small-distance">N/A</dd></div>
+            </dl>
+          </article>
+        </div>
+      </section>
+
+      <section id="log-panel" class="dash-card log-panel" data-animate>
+        <div class="card-head">
+          <div>
+            <p class="panel-kicker">Realtime Events</p>
+            <h2>Compact Live Log</h2>
+          </div>
+          <div class="log-actions">
+            <button id="log-toggle-btn" class="btn btn-ghost" type="button" data-ripple>Expand</button>
+            <button id="clear-log-btn" class="btn btn-ghost" type="button" data-ripple>Clear Log</button>
+          </div>
+        </div>
+        <div class="log-filters" role="group" aria-label="Log filters">
+          <button class="filter-btn active" type="button" data-log-filter="all">All</button>
+          <button class="filter-btn" type="button" data-log-filter="info">Info</button>
+          <button class="filter-btn" type="button" data-log-filter="ok">Success</button>
+          <button class="filter-btn" type="button" data-log-filter="warn">Warn</button>
+          <button class="filter-btn" type="button" data-log-filter="error">Error</button>
+        </div>
+        <div id="live-log" class="log-box"></div>
+      </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=4"></script>
+  <script src="{{ url_for('static', filename='js/map.js') }}?v=4"></script>
+  <script src="{{ url_for('static', filename='js/dashboard.js') }}?v=5"></script>
+</body>
+</html>

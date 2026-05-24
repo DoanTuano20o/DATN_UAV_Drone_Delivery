@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DATN UAV Dashboard</title>
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+  <header class="topbar">
+    <h1>GIAO DIEN GIAM SAT DRONE - DATN UAV</h1>
+    <div id="server-status" class="badge">Server starting...</div>
+  </header>
+
+  <main class="layout">
+    <section class="left-panel">
+      <div class="card">
+        <h2>Camera</h2>
+        <div class="camera-box">
+          <img id="camera-stream" src="/video_feed" alt="Camera stream" />
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Telemetry</h2>
+        <div class="grid-two">
+          <div><strong>Mode:</strong> <span id="mode">N/A</span></div>
+          <div><strong>Armed:</strong> <span id="armed">N/A</span></div>
+          <div><strong>Battery:</strong> <span id="battery">N/A</span></div>
+          <div><strong>GPS Fix:</strong> <span id="gps-fix">N/A</span></div>
+          <div><strong>Sats:</strong> <span id="sats">N/A</span></div>
+          <div><strong>Alt:</strong> <span id="alt">N/A</span></div>
+          <div><strong>Speed:</strong> <span id="speed">N/A</span></div>
+          <div><strong>Lat/Lon:</strong> <span id="latlon">N/A</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>ArUco Markers</h2>
+        <ul id="marker-list" class="list">
+          <li>No marker detected</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="right-panel">
+      <div class="card">
+        <div class="row-between">
+          <h2>Map</h2>
+          <button id="clear-waypoints-btn" class="btn">Clear Waypoints</button>
+        </div>
+        <div id="map" style="width: 100%; height: 500px;"></div>
+      </div>
+
+      <div class="card">
+        <h2>Selected Waypoints</h2>
+        <ul id="waypoint-list" class="list">
+          <li>No waypoints selected</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    (() => {
+      const socket = io();
+
+      const serverStatusEl = document.getElementById("server-status");
+      const markerListEl = document.getElementById("marker-list");
+      const waypointListEl = document.getElementById("waypoint-list");
+      const clearWaypointsBtn = document.getElementById("clear-waypoints-btn");
+
+      const modeEl = document.getElementById("mode");
+      const armedEl = document.getElementById("armed");
+      const batteryEl = document.getElementById("battery");
+      const gpsFixEl = document.getElementById("gps-fix");
+      const satsEl = document.getElementById("sats");
+      const altEl = document.getElementById("alt");
+      const speedEl = document.getElementById("speed");
+      const latlonEl = document.getElementById("latlon");
+
+      let map = null;
+      let droneMarker = null;
+      let dronePath = null;
+      let dronePathPoints = [];
+      let waypointLayer = null;
+      let selectedWaypoints = [];
+      let firstDroneFix = true;
+      let lastMarkerHtml = null;
+
+      function fmtNum(v, digits = 2) {
+        if (v === null || v === undefined || Number.isNaN(Number(v))) return "N/A";
+        return Number(v).toFixed(digits);
+      }
+
+      function setServerStatus(text, connected = false) {
+        if (!serverStatusEl) return;
+        serverStatusEl.textContent = text;
+        serverStatusEl.style.background = connected ? "#1f7a1f" : "#8b1e1e";
+        serverStatusEl.style.color = "#fff";
+        serverStatusEl.style.padding = "6px 12px";
+        serverStatusEl.style.borderRadius = "999px";
+      }
+
+      function initMap() {
+        map = L.map("map").setView([10.8506, 106.7719], 17);
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 22,
+          attribution: "&copy; OpenStreetMap contributors"
+        }).addTo(map);
+
+        waypointLayer = L.layerGroup().addTo(map);
+        dronePath = L.polyline([], { weight: 3 }).addTo(map);
+
+        map.on("click", (e) => {
+          const lat = e.latlng.lat;
+          const lon = e.latlng.lng;
+          selectedWaypoints.push({ lat, lon });
+          renderWaypoints();
+        });
+      }
+
+      function buildMarkerHtml(markers) {
+        if (!markers || markers.length === 0) {
+          return "<li>No marker detected</li>";
+        }
+
+        return markers.map((m) => `
+          <li>
+            <strong>ID ${m.marker_id}</strong>
+            | center=(${m.center_x}, ${m.center_y})
+            | err=(${m.err_x}, ${m.err_y})
+            | dist=${fmtNum(m.distance_m, 3)} m
+            | z=${fmtNum(m.z_m, 3)} m
+            | src=${m.src ?? "N/A"}
+          </li>
+        `).join("");
+      }
+
+      function renderMarkers(markers) {
+        if (!markerListEl) return;
+        const newHtml = buildMarkerHtml(markers);
+        if (newHtml === lastMarkerHtml) return;
+        markerListEl.innerHTML = newHtml;
+        lastMarkerHtml = newHtml;
+      }
+
+      function renderWaypoints() {
+        waypointLayer.clearLayers();
+
+        if (!selectedWaypoints.length) {
+          waypointListEl.innerHTML = "<li>No waypoints selected</li>";
+          return;
+        }
+
+        waypointListEl.innerHTML = "";
+
+        selectedWaypoints.forEach((wp, i) => {
+          L.marker([wp.lat, wp.lon])
+            .addTo(waypointLayer)
+            .bindPopup(`Waypoint ${i + 1}<br>${fmtNum(wp.lat, 6)}, ${fmtNum(wp.lon, 6)}`);
+
+          const li = document.createElement("li");
+          li.innerHTML = `<strong>WP ${i + 1}</strong> | ${fmtNum(wp.lat, 6)}, ${fmtNum(wp.lon, 6)}`;
+          waypointListEl.appendChild(li);
+        });
+      }
+
+      function updateTelemetryPanel(data) {
+        modeEl.textContent = data.mode ?? "N/A";
+        armedEl.textContent = data.armed === true ? "ARMED" : (data.armed === false ? "DISARMED" : "N/A");
+        batteryEl.textContent = data.battery_v !== null && data.battery_v !== undefined
+          ? `${fmtNum(data.battery_v, 2)} V`
+          : "N/A";
+        gpsFixEl.textContent = data.gps_fix ?? "N/A";
+        satsEl.textContent = data.satellites ?? "N/A";
+        altEl.textContent = data.rel_alt_m !== null && data.rel_alt_m !== undefined
+          ? `${fmtNum(data.rel_alt_m, 2)} m`
+          : "N/A";
+        speedEl.textContent = data.speed_mps !== null && data.speed_mps !== undefined
+          ? `${fmtNum(data.speed_mps, 2)} m/s`
+          : "N/A";
+
+        if (typeof data.lat === "number" && typeof data.lon === "number") {
+          latlonEl.textContent = `${fmtNum(data.lat, 7)}, ${fmtNum(data.lon, 7)}`;
+        } else {
+          latlonEl.textContent = "N/A";
+        }
+      }
+
+      function updateDroneOnMap(data) {
+        if (typeof data.lat !== "number" || typeof data.lon !== "number") return;
+
+        const latlng = [data.lat, data.lon];
+
+        const popupHtml = `
+          <strong>Drone</strong><br>
+          Mode: ${data.mode ?? "N/A"}<br>
+          Armed: ${data.armed === true ? "Yes" : (data.armed === false ? "No" : "N/A")}<br>
+          GPS Fix: ${data.gps_fix ?? "N/A"}<br>
+          Sats: ${data.satellites ?? "N/A"}<br>
+          Battery: ${data.battery_v ?? "N/A"} V<br>
+          Alt: ${data.rel_alt_m ?? "N/A"} m<br>
+          Speed: ${data.speed_mps ?? "N/A"} m/s
+        `;
+
+        if (!droneMarker) {
+          droneMarker = L.marker(latlng).addTo(map).bindPopup(popupHtml);
+        } else {
+          droneMarker.setLatLng(latlng);
+          droneMarker.setPopupContent(popupHtml);
+        }
+
+        const last = dronePathPoints[dronePathPoints.length - 1];
+        if (!last || last[0] !== latlng[0] || last[1] !== latlng[1]) {
+          dronePathPoints.push(latlng);
+
+          if (dronePathPoints.length > 300) {
+            dronePathPoints.shift();
+          }
+
+          dronePath.setLatLngs(dronePathPoints);
+        }
+
+        if (firstDroneFix) {
+          map.setView(latlng, 19);
+          firstDroneFix = false;
+        }
+      }
+
+      function handleTelemetry(data) {
+        if (!data) return;
+
+        const connected = !!data.connected;
+        setServerStatus(
+          connected ? "FC connected" : `FC disconnected${data.error ? " | " + data.error : ""}`,
+          connected
+        );
+
+        updateTelemetryPanel(data);
+        updateDroneOnMap(data);
+      }
+
+      async function loadHealth() {
+        try {
+          const res = await fetch("/health");
+          const data = await res.json();
+          setServerStatus(
+            data.fc_connected ? "FC connected" : "Server OK - FC not connected",
+            !!data.fc_connected
+          );
+        } catch (err) {
+          console.error("[WEB] /health error:", err);
+          setServerStatus("Server offline", false);
+        }
+      }
+
+      async function pollTelemetryFallback() {
+        try {
+          const res = await fetch("/api/telemetry");
+          const data = await res.json();
+          handleTelemetry(data);
+        } catch (err) {
+          console.error("[WEB] telemetry poll error:", err);
+        }
+      }
+
+      async function loadMarkersOnce() {
+        try {
+          const res = await fetch("/api/aruco-markers");
+          const markers = await res.json();
+          renderMarkers(markers);
+        } catch (err) {
+          console.error("[WEB] load markers error:", err);
+        }
+      }
+
+      clearWaypointsBtn.addEventListener("click", () => {
+        selectedWaypoints = [];
+        renderWaypoints();
+      });
+
+      socket.on("connect", () => {
+        console.log("[WEB] socket connected");
+      });
+
+      socket.on("disconnect", () => {
+        console.log("[WEB] socket disconnected");
+        setServerStatus("Socket disconnected", false);
+      });
+
+      socket.on("telemetry", (data) => {
+        handleTelemetry(data);
+      });
+
+      socket.on("aruco_markers", (markers) => {
+        renderMarkers(markers);
+      });
+
+      initMap();
+      renderWaypoints();
+      loadHealth();
+      loadMarkersOnce();
+      pollTelemetryFallback();
+
+      setInterval(loadHealth, 5000);
+      setInterval(pollTelemetryFallback, 1000);
+    })();
+  </script>
+</body>
+</html>

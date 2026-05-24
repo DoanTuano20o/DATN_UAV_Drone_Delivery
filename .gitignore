@@ -1,0 +1,56 @@
+# Python
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# ROS2 / colcon
+build/
+install/
+log/
+logs/
+*.bag
+*.db3
+rosbag2_*/
+
+# Runtime files
+runtime/
+*.log
+*.tmp
+*.pid
+.uav_public_url
+.uav_ngrok_url
+*.launch.log
+*.ngrok.log
+
+# Environment / secrets
+.env
+.env.*
+*.secret
+*.token
+secrets/
+config/secrets*
+**/ngrok.yml
+**/.ngrok2/
+**/.config/ngrok/
+ngrok.yml
+ngrok.yml.local
+
+# Large backup assets
+src/uav_web_bridge/uav_web_bridge/app/static/assets/videos/original_backup/
+src/uav_web_bridge/uav_web_bridge/app/static/assets/images/original_backup/
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/settings.json
+
+# Node / frontend if exists
+node_modules/
+dist/
+.cache/

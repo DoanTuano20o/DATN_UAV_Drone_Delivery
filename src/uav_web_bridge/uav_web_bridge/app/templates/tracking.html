@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Theo dõi giao hàng UAV</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=9" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/tracking.css') }}?v=6" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body class="tracking-page" data-page="tracking">
+  <nav class="site-nav tracking-nav" data-nav>
+    <a class="brand" href="/">
+      <span class="brand-mark">UAV</span>
+      <span>Theo dõi đơn hàng</span>
+    </a>
+    <div class="nav-actions">
+      <a href="/" class="btn btn-ghost" data-ripple>Trang chủ</a>
+      <a href="/dashboard" class="btn btn-primary" data-ripple>Admin Dashboard</a>
+    </div>
+  </nav>
+
+  <main class="tracking-shell">
+    <div class="tracking-main-column">
+      <section class="tracking-summary glass-panel" data-animate>
+        <div class="summary-copy">
+          <p class="tracking-kicker">THEO DÕI GIAO HÀNG</p>
+          <h1 id="tracking-title">Đơn hàng đang chờ dữ liệu</h1>
+          <p id="customer-status-text">Đang chờ dữ liệu giao hàng realtime từ hệ thống UAV.</p>
+        </div>
+        <div class="summary-badge">
+          <span class="live-chip" data-connection-chip>
+            <span class="pulse-dot"></span>
+            <strong id="tracking-connection">Đang kết nối</strong>
+          </span>
+          <span id="last-update" class="last-update">Cập nhật: —</span>
+        </div>
+      </section>
+
+      <section class="tracking-map-card glass-panel" data-animate>
+        <div class="card-head">
+          <div>
+            <p class="panel-kicker">VỊ TRÍ DRONE</p>
+            <h2>Tuyến đường realtime</h2>
+            <span>Cập nhật theo dữ liệu realtime từ hệ thống UAV.</span>
+          </div>
+          <span class="map-mode-chip">Live map</span>
+        </div>
+        <div id="tracking-map" class="tracking-map"></div>
+      </section>
+    </div>
+
+    <aside class="tracking-side-column">
+      <section class="tracking-stats glass-panel" data-animate>
+        <article class="metric-card" data-metric="delivery">
+          <span class="metric-dot"></span>
+          <div>
+            <small>Trạng thái giao hàng</small>
+            <strong id="delivery-status">Đang chờ dữ liệu</strong>
+          </div>
+        </article>
+        <article class="metric-card" data-metric="eta">
+          <span class="metric-dot"></span>
+          <div>
+            <small>Thời gian dự kiến</small>
+            <strong id="eta">Đang tính...</strong>
+          </div>
+        </article>
+        <article class="metric-card" data-metric="drone">
+          <span class="metric-dot"></span>
+          <div>
+            <small>Trạng thái drone</small>
+            <strong id="customer-drone-status">Chưa có dữ liệu</strong>
+          </div>
+        </article>
+        <article class="metric-card" data-metric="package">
+          <span class="metric-dot"></span>
+          <div>
+            <small>Đơn hàng</small>
+            <strong id="package-status">Đang chuẩn bị</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="delivery-card glass-panel" data-animate>
+        <div class="card-head compact-head">
+          <div>
+            <p class="panel-kicker">TIẾN TRÌNH</p>
+            <h2>Tiến trình giao hàng</h2>
+          </div>
+        </div>
+        <ol class="delivery-timeline" id="delivery-timeline">
+          <li data-step="received" class="done">
+            <span></span>
+            <div>
+              <strong>Đã nhận đơn</strong>
+              <p>Yêu cầu giao hàng đã được ghi nhận.</p>
+            </div>
+          </li>
+          <li data-step="preparing" class="active">
+            <span></span>
+            <div>
+              <strong>Chuẩn bị</strong>
+              <p>Hệ thống đang chuẩn bị drone và kiện hàng.</p>
+            </div>
+          </li>
+          <li data-step="takeoff">
+            <span></span>
+            <div>
+              <strong>Cất cánh</strong>
+              <p>Drone bắt đầu nhiệm vụ giao hàng.</p>
+            </div>
+          </li>
+          <li data-step="route">
+            <span></span>
+            <div>
+              <strong>Đang bay</strong>
+              <p>Drone đang di chuyển đến điểm giao.</p>
+            </div>
+          </li>
+          <li data-step="near">
+            <span></span>
+            <div>
+              <strong>Tiếp cận điểm giao</strong>
+              <p>Drone tìm marker và căn chỉnh hạ cánh.</p>
+            </div>
+          </li>
+          <li data-step="delivered">
+            <span></span>
+            <div>
+              <strong>Hoàn tất</strong>
+              <p>Đơn hàng đã được giao thành công.</p>
+            </div>
+          </li>
+        </ol>
+      </section>
+
+      <section class="realtime-card glass-panel" data-animate>
+        <div class="card-head compact-head">
+          <div>
+            <p class="panel-kicker">REALTIME</p>
+            <h2>Thông tin realtime</h2>
+          </div>
+        </div>
+        <dl class="realtime-grid">
+          <div>
+            <dt>Độ cao</dt>
+            <dd id="tracking-altitude">—</dd>
+          </div>
+          <div>
+            <dt>Tốc độ</dt>
+            <dd id="tracking-speed">—</dd>
+          </div>
+          <div>
+            <dt>GPS</dt>
+            <dd id="tracking-gps">—</dd>
+          </div>
+          <div>
+            <dt>Vệ tinh</dt>
+            <dd id="tracking-satellites">—</dd>
+          </div>
+          <div>
+            <dt>Pin</dt>
+            <dd id="tracking-battery">—</dd>
+          </div>
+          <div>
+            <dt>Khoảng cách</dt>
+            <dd id="tracking-distance">—</dd>
+          </div>
+        </dl>
+      </section>
+    </aside>
+  </main>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=9"></script>
+  <script src="{{ url_for('static', filename='js/tracking.js') }}?v=6"></script>
+</body>
+</html>

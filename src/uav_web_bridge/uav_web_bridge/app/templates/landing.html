@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hệ thống Drone Giao Hàng Tự Động</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}?v=10" />
+</head>
+<body class="landing-page delivery-product-page" data-page="landing">
+  <nav class="site-nav product-nav delivery-nav" data-nav>
+    <a class="brand" href="/">
+      <span class="brand-mark">UAV</span>
+      <span>Drone Delivery System</span>
+    </a>
+
+    <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false" aria-controls="primary-navigation" data-nav-toggle>
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <div id="primary-navigation" class="nav-links" data-nav-menu>
+      <a href="#overview" class="nav-link">Tổng quan</a>
+      <a href="#solution" class="nav-link">Giải pháp</a>
+      <a href="#planning" class="nav-link">Vận hành</a>
+      <a href="#mission-flow" class="nav-link">Quy trình</a>
+      <a href="#technology" class="nav-link">Công nghệ</a>
+      <a href="#creators" class="nav-link">Nhóm</a>
+      <a href="/dashboard" class="nav-link mobile-menu-action">Mở Dashboard</a>
+      <a href="/tracking" class="nav-link mobile-menu-action">Theo dõi giao hàng</a>
+    </div>
+
+    <div class="nav-actions">
+      <a href="/dashboard" class="btn btn-primary" data-ripple>Mở Dashboard</a>
+      <a href="/tracking" class="btn btn-ghost" data-ripple>Theo dõi giao hàng</a>
+    </div>
+  </nav>
+
+  <header id="overview" class="delivery-hero" data-parallax>
+    <div
+      class="landing-media hero-media-layer"
+      data-media
+      data-video-priority="hero"
+      data-video-src="/static/assets/videos/delivery-hero.mp4"
+      style="--poster-url: url('/static/assets/images/delivery-hero.jpg')"
+      aria-hidden="true"
+    >
+      <video class="landing-bg-video" autoplay muted loop playsinline preload="auto" poster="/static/assets/images/delivery-hero.jpg" data-bg-video data-video-role="hero" data-video-name="delivery-hero">
+        <source src="/static/assets/videos/delivery-hero.mp4" type="video/mp4">
+      </video>
+      <div class="media-fallback media-fallback-hero"></div>
+    </div>
+    <div class="delivery-hero-overlay"></div>
+    </svg>
+
+    <section class="delivery-hero-content" data-animate>
+      <p class="delivery-kicker">NỀN TẢNG UAV GIAO HÀNG</p>
+      <h1>DRONE DELIVERY AUTONOMOUS SYSTEM</h1>
+      <p class="delivery-hero-subtitle">
+        Nền tảng quản lý và giám sát UAV giao hàng ứng dụng ROS2, định vị GPS,
+        web dashboard và hạ cánh chính xác bằng ArUco.
+      </p>
+      <p class="delivery-hero-description">
+        Hệ thống hỗ trợ thiết lập nhiệm vụ, theo dõi hành trình, giám sát camera
+        và cung cấp trang tracking giao hàng trong một giao diện web thống nhất.
+      </p>
+      <div class="hero-actions">
+        <a href="/dashboard" class="btn btn-primary btn-lg" data-ripple>Mở Dashboard</a>
+        <a href="/tracking" class="btn btn-secondary btn-lg" data-ripple>Theo dõi giao hàng</a>
+      </div>
+      <div class="hero-status-chips" aria-label="Năng lực hệ thống">
+        <span>GPS Mission</span>
+        <span>ROS2 Bridge</span>
+        <span>Precision Landing</span>
+        <span>Public Tracking</span>
+      </div>
+    </section>
+
+  </header>
+  </nav>
+
+  <main>
+    <section id="solution" class="product-section overview-section">
+      <div class="product-two-col">
+        <div class="section-copy" data-animate>
+          <p class="delivery-kicker">TỔNG QUAN HỆ THỐNG</p>
+          <h2>Một nền tảng cho giao hàng bằng UAV tự động</h2>
+          <p>
+            Drone Delivery System là nền tảng mô phỏng và vận hành UAV giao hàng
+            tự động, kết hợp ROS2 bridge, Flask-SocketIO, bản đồ Leaflet, camera
+            giám sát và trang tracking để hỗ trợ quá trình giao hàng từ lúc
+            nhận nhiệm vụ đến khi hạ cánh.
+          </p>
+          <div class="section-actions">
+            <a href="/dashboard" class="text-link">Mở Dashboard</a>
+            <a href="/tracking" class="text-link">Theo dõi giao hàng</a>
+          </div>
+        </div>
+
+        <div
+          class="landing-media product-visual fleet-visual"
+          data-media
+          data-video-src="/static/assets/videos/platform-overview.mp4"
+          style="--poster-url: url('/static/assets/images/platform-overview.jpg')"
+          data-animate
+        >
+          <video class="landing-bg-video" autoplay muted loop playsinline preload="metadata" poster="/static/assets/images/platform-overview.jpg" data-bg-video data-video-role="section" data-video-name="platform-overview">
+            <source src="/static/assets/videos/platform-overview.mp4" type="video/mp4">
+          </video>
+          <div class="media-fallback">
+            <div class="mock-panel"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="product-section statement-section">
+      <div class="statement-inner" data-animate>
+        <p class="delivery-kicker">XU HƯỚNG GIAO HÀNG NĂM 2026</p>
+        <h2>Giao hàng bằng drone không còn là ý tưởng tương lai</h2>
+        <p>
+          Năm 2026, mô hình giao hàng bằng UAV đang dần được thử nghiệm và triển khai
+          trong các bài toán giao hàng nhanh, hàng nhẹ, y tế, khu dân cư và những khu
+          vực khó tiếp cận.
+        </p>
+        <p>
+          So với giao hàng truyền thống phụ thuộc vào đường bộ, tài xế và tình trạng
+          giao thông, drone có thể bay theo tuyến ngắn hơn, giảm thời gian ở chặng
+          cuối và hỗ trợ tự động hóa quy trình vận chuyển. Khi kết hợp định vị GPS,
+          thị giác máy tính, marker ArUco và hệ thống giám sát qua web, drone delivery
+          trở thành một hướng phát triển tiềm năng cho logistics hiện đại.
+        </p>
+      </div>
+    </section>
+
+    <section id="planning" class="product-section planning-section">
+      <div class="center-heading" data-animate>
+        <p class="delivery-kicker">LẬP KẾ HOẠCH VÀ VẬN HÀNH</p>
+        <h2>Quản lý nhiệm vụ UAV thông minh</h2>
+        <p>
+          Từ chọn điểm đến, giám sát hành trình đến hạ cánh chính xác, hệ thống hỗ trợ
+          người vận hành theo dõi nhiệm vụ giao hàng bằng UAV trên một nền tảng web duy nhất.
+        </p>
+      </div>
+
+      <div class="planning-showcase">
+        <div
+          class="landing-media product-visual route-visual"
+          data-media
+          data-video-src="/static/assets/videos/mission-planning.mp4"
+          style="--poster-url: url('/static/assets/images/mission-planning.jpg')"
+          data-animate
+        >
+          <video class="landing-bg-video" autoplay muted loop playsinline preload="metadata" poster="/static/assets/images/mission-planning.jpg" data-bg-video data-video-role="section" data-video-name="mission-planning">
+            <source src="/static/assets/videos/mission-planning.mp4" type="video/mp4">
+          </video>
+          <div class="media-fallback media-fallback-route"></div>
+        </div>
+
+        <div class="planning-cards">
+          <article class="premium-card" data-animate>
+            <span>01</span>
+            <h3>Chọn điểm giao hàng</h3>
+            <p>Người vận hành có thể chọn điểm đến trên bản đồ Leaflet và gửi goal đến hệ thống UAV thông qua backend hiện có.</p>
+          </article>
+          <article class="premium-card" data-animate>
+            <span>02</span>
+            <h3>Theo dõi vị trí và tuyến bay</h3>
+            <p>Dashboard hỗ trợ theo dõi vị trí drone, tuyến đường, marker và trạng thái nhiệm vụ trong quá trình vận hành.</p>
+          </article>
+          <article class="premium-card" data-animate>
+            <span>03</span>
+            <h3>Giám sát an toàn vận hành</h3>
+            <p>Giao diện cung cấp thông tin telemetry, camera, trạng thái hệ thống và kết nối để hỗ trợ người vận hành trước và trong khi thực hiện nhiệm vụ.</p>
+          </article>
+          <article class="premium-card" data-animate>
+            <span>04</span>
+            <h3>Hạ cánh chính xác</h3>
+            <p>Thị giác máy tính và marker ArUco hỗ trợ drone căn chỉnh trong giai đoạn hạ cánh tại khu vực giao hàng.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="why-drone-delivery" class="product-section comparison-section">
+      <div class="center-heading" data-animate>
+        <p class="delivery-kicker">LỢI ÍCH VẬN HÀNH</p>
+        <h2>Vì sao chọn giao hàng bằng drone?</h2>
+      </div>
+      <div class="comparison-grid product-comparison-grid">
+        <article class="comparison-card delivery-comparison-card" data-animate>
+          <h3>Giao hàng truyền thống</h3>
+          <ul class="comparison-list">
+            <li>Phụ thuộc nhiều vào đường bộ</li>
+            <li>Dễ bị ảnh hưởng bởi kẹt xe</li>
+            <li>Cần nhân lực cho từng chuyến</li>
+            <li>Khó tiếp cận khu vực xa hoặc địa hình phức tạp</li>
+            <li>Thời gian giao hàng dễ biến động</li>
+          </ul>
+        </article>
+        <article class="comparison-card delivery-comparison-card comparison-card-highlight" data-animate>
+          <h3>Giao hàng bằng drone</h3>
+          <ul class="comparison-list">
+            <li>Bay theo tuyến ngắn và linh hoạt hơn</li>
+            <li>Ít phụ thuộc vào giao thông đường bộ</li>
+            <li>Có thể tự động hóa nhiệm vụ</li>
+            <li>Phù hợp với đơn hàng nhẹ, cần giao nhanh</li>
+            <li>Có thể theo dõi qua dashboard realtime</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="product-section visual-story">
+      <article class="story-row">
+        <div class="section-copy" data-animate>
+          <p class="delivery-kicker">LẬP TUYẾN BAY</p>
+          <h2>Thiết lập lộ trình rõ ràng hơn</h2>
+          <p>Hệ thống hỗ trợ người vận hành thiết lập điểm đến, quan sát bản đồ và theo dõi vị trí UAV trong quá trình thực hiện nhiệm vụ.</p>
+        </div>
+        <div
+          class="landing-media story-media"
+          data-media
+          data-video-src="/static/assets/videos/route-planning.mp4"
+          style="--poster-url: url('/static/assets/images/route-planning.jpg')"
+          data-animate
+        >
+          <video class="landing-bg-video" autoplay muted loop playsinline preload="metadata" poster="/static/assets/images/route-planning.jpg" data-bg-video data-video-role="section" data-video-name="route-planning">
+            <source src="/static/assets/videos/route-planning.mp4" type="video/mp4">
+          </video>
+          <div class="media-fallback media-fallback-route"></div>
+        </div>
+      </article>
+
+      <article class="story-row story-row-reverse">
+        <div class="section-copy" data-animate>
+          <p class="delivery-kicker">GIÁM SÁT VẬN HÀNH</p>
+          <h2>Theo dõi các thời điểm quan trọng</h2>
+          <p>Dashboard hiển thị camera, telemetry, trạng thái nhiệm vụ, marker và trạng thái hệ thống để hỗ trợ giám sát UAV trong suốt quá trình vận hành.</p>
+        </div>
+        <div
+          class="landing-media story-media"
+          data-media
+          data-video-src="/static/assets/videos/operations-monitoring.mp4"
+          style="--poster-url: url('/static/assets/images/operations-monitoring.jpg')"
+          data-animate
+        >
+          <video class="landing-bg-video" autoplay muted loop playsinline preload="metadata" poster="/static/assets/images/operations-monitoring.jpg" data-bg-video data-video-role="section" data-video-name="operations-monitoring">
+            <source src="/static/assets/videos/operations-monitoring.mp4" type="video/mp4">
+          </video>
+          <div class="media-fallback media-fallback-monitor"></div>
+        </div>
+      </article>
+
+      <article class="story-row">
+        <div class="section-copy" data-animate>
+          <p class="delivery-kicker">HẠ CÁNH CHÍNH XÁC</p>
+          <h2>Căn chỉnh hạ cánh bằng thị giác máy tính</h2>
+          <p>Marker ArUco và computer vision hỗ trợ quá trình căn chỉnh trong giai đoạn hạ cánh chính xác tại điểm giao hàng.</p>
+        </div>
+        <div
+          class="landing-media story-media"
+          data-media
+          data-video-src="/static/assets/videos/precision-landing.mp4"
+          style="--poster-url: url('/static/assets/images/precision-landing.jpg')"
+          data-animate
+        >
+          <video class="landing-bg-video" autoplay muted loop playsinline preload="metadata" poster="/static/assets/images/precision-landing.jpg" data-bg-video data-video-role="section" data-video-name="precision-landing">
+            <source src="/static/assets/videos/precision-landing.mp4" type="video/mp4">
+          </video>
+          <div class="media-fallback media-fallback-landing"></div>
+        </div>
+      </article>
+    </section>
+
+    <section id="mission-flow" class="product-section mission-section">
+      <div class="center-heading" data-animate>
+        <p class="delivery-kicker">MÔ PHỎNG QUY TRÌNH NHIỆM VỤ</p>
+        <h2>Từ cất cánh đến hạ cánh chính xác</h2>
+      </div>
+      <div class="timeline product-timeline">
+        <article class="timeline-step" data-animate><span>01</span><h3>Cất cánh</h3><p>Drone cất cánh và ổn định độ cao nhiệm vụ.</p></article>
+        <article class="timeline-step" data-animate><span>02</span><h3>Bay đến điểm giao</h3><p>Drone di chuyển đến khu vực giao hàng đã được thiết lập.</p></article>
+        <article class="timeline-step" data-animate><span>03</span><h3>Tìm marker</h3><p>Hệ thống tìm marker ArUco trong vùng giao hàng.</p></article>
+        <article class="timeline-step" data-animate><span>04</span><h3>Căn chỉnh marker</h3><p>Drone căn chỉnh sai số X/Y theo marker quan sát được.</p></article>
+        <article class="timeline-step" data-animate><span>05</span><h3>Khóa mục tiêu</h3><p>Drone giữ marker ổn định trước khi hạ độ cao.</p></article>
+        <article class="timeline-step" data-animate><span>06</span><h3>Hạ độ cao</h3><p>Drone giảm độ cao có kiểm soát trong vùng giao hàng.</p></article>
+        <article class="timeline-step" data-animate><span>07</span><h3>Hoàn tất hạ cánh</h3><p>Drone tiếp cận điểm giao hàng và hoàn tất nhiệm vụ.</p></article>
+      </div>
+    </section>
+
+    <section class="product-section modules-section">
+      <div class="center-heading" data-animate>
+        <p class="delivery-kicker">CÁC THÀNH PHẦN NỀN TẢNG</p>
+        <h2>Xây dựng cho người vận hành và người theo dõi</h2>
+      </div>
+      <div class="platform-grid modules-grid">
+        <article class="platform-card premium-card" data-animate>
+          <h3>Dashboard vận hành</h3>
+          <p>Theo dõi telemetry, camera, bản đồ, trạng thái nhiệm vụ và tình trạng hệ thống.</p>
+          <a href="/dashboard">Mở Dashboard</a>
+        </article>
+        <article class="platform-card premium-card" data-animate>
+          <h3>Trang theo dõi giao hàng</h3>
+          <p>Hiển thị trạng thái giao hàng, vị trí drone và tiến trình đơn hàng cho người dùng.</p>
+          <a href="/tracking">Theo dõi giao hàng</a>
+        </article>
+        <article class="platform-card premium-card" data-animate>
+          <h3>Cầu nối ROS2</h3>
+          <p>Kết nối dữ liệu UAV, vision, mission và web dashboard thông qua Flask-SocketIO.</p>
+        </article>
+        <article class="platform-card premium-card" data-animate>
+          <h3>Bản đồ và nhiệm vụ</h3>
+          <p>Hỗ trợ Leaflet map, chọn goal và theo dõi marker trong quá trình vận hành.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="technology" class="product-section technology-section">
+      <div class="center-heading" data-animate>
+        <p class="delivery-kicker">CÔNG NGHỆ SỬ DỤNG</p>
+        <h2>Drone, web realtime và thị giác chính xác</h2>
+      </div>
+      <div class="tech-grid tech-grid-detailed">
+        <article class="tech-card" data-animate><strong>ROS2</strong><span>Middleware cho drone</span></article>
+        <article class="tech-card" data-animate><strong>Flask</strong><span>Backend web</span></article>
+        <article class="tech-card" data-animate><strong>Flask-SocketIO</strong><span>Dữ liệu realtime</span></article>
+        <article class="tech-card" data-animate><strong>Leaflet</strong><span>Bản đồ nhiệm vụ</span></article>
+        <article class="tech-card" data-animate><strong>OpenCV</strong><span>Xử lý thị giác</span></article>
+        <article class="tech-card" data-animate><strong>ArUco</strong><span>Marker hạ cánh</span></article>
+        <article class="tech-card" data-animate><strong>MAVLink</strong><span>Dữ liệu bay</span></article>
+        <article class="tech-card" data-animate><strong>ArduPilot</strong><span>Hệ thống autopilot</span></article>
+        <article class="tech-card" data-animate><strong>Flywoo GOKU H743</strong><span>Bộ điều khiển bay</span></article>
+      </div>
+    </section>
+
+    <section id="creators" class="product-section creators-section">
+      <div class="center-heading" data-animate>
+        <p class="delivery-kicker">NHÓM THỰC HIỆN</p>
+        <h2>Nhóm thực hiện</h2>
+      </div>
+      <div class="creator-grid">
+        <article class="creator-card premium-card" data-animate>
+          <span class="creator-avatar">T</span>
+          <h3>Hoàng Chí Thiện</h3>
+          <p>MSSV: 22151149</p>
+        </article>
+        <article class="creator-card premium-card" data-animate>
+          <span class="creator-avatar">T</span>
+          <h3>Đoàn Nguyễn Anh Tuấn</h3>
+          <p>MSSV: 22151157</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer product-footer">
+    <div>
+      <strong>Drone Delivery System</strong>
+      <span>Đồ án nghiên cứu và xây dựng hệ thống UAV giao hàng ứng dụng ROS2.</span>
+    </div>
+    <nav aria-label="Footer navigation">
+      <a href="/dashboard">Mở Dashboard</a>
+      <a href="/tracking">Theo dõi giao hàng</a>
+    </nav>
+  </footer>
+
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=9"></script>
+</body>
+</html>

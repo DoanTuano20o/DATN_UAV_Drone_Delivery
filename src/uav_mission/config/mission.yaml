@@ -1,0 +1,139 @@
+mission_manager_node:
+  ros__parameters:
+    # =========================
+    # TAKEOFF / GOTO GPS
+    # =========================
+
+    takeoff_alt_m: 7.0               # Độ cao cất cánh ban đầu để tìm mã lớn, đơn vị mét
+    hold_before_goto_s: 7.0          # Sau khi cất cánh, hover chờ ổn định trước khi bay tới GPS
+    goto_speed_mps: 1.0              # Tốc độ bay tới vùng GPS marker, m/s
+
+    marker_ref_lat: 10.8448820       # Vĩ độ tâm vùng tìm marker lớn
+    marker_ref_lon: 106.7962567     # Kinh độ tâm vùng tìm marker lớn
+
+    search_enter_radius_m: 2.0       # Khi drone cách tâm GPS <= bán kính này thì bắt đầu SEARCH_BIG_PATTERN
+
+    # =========================
+    # SEARCH BIG MARKER PATTERN
+    # =========================
+
+    search_pattern_radius_m: 2.0         # Bán kính search ban đầu quanh tâm GPS, đơn vị mét
+    search_pattern_radius_step_m: 1.0    # Mỗi vòng search tiếp theo tăng bán kính thêm 1m
+    search_pattern_loops_max: 3          # Số vòng search tối đa trước khi quay lại vòng đầu
+
+    search_waypoint_reached_m: 0.8       # Cách waypoint <= 0.8m thì coi như đã tới waypoint search
+    search_step_hold_s: 2.0              # Khi tới waypoint search, hover lại 2 giây để camera nhìn rõ
+    search_waypoint_timeout_s: 8.0       # Nếu sau 8 giây chưa tới waypoint thì bỏ qua điểm đó để tránh kẹt
+    search_waypoint_speed_mps: 0.4       # Tốc độ bay giữa các điểm search
+
+    alt_reached_tol_m: 0.30              # Sai số chấp nhận khi kiểm tra đã đạt độ cao takeoff
+
+    # =========================
+    # MARKER ID
+    # =========================
+
+    big_marker_id: 150                   # ID mã ArUco lớn dùng ở độ cao cao
+    small_marker_id: 40                  # ID mã ArUco nhỏ dùng ở độ cao thấp
+
+    small_marker_enable_alt_m: 4.0       # Cho phép nhận mã nhỏ khi rel_alt <= 3.2m, dùng cho SEARCH_SMALL và backup khi descend
+
+    # =========================
+    # TIMEOUT
+    # =========================
+
+    marker_lost_timeout_s: 2.0           # Sau 2.0s không thấy marker thì coi như mất marker
+    search_timeout_s: 60.0               # Timeout tổng cho quá trình search mã lớn
+
+    # =========================
+    # ALIGN / LOCK BIG MARKER
+    # =========================
+
+    big_align_deadband_px: 25.0          # Sai số pixel nhỏ hơn mức này thì coi như 0, tránh rung
+    big_lock_tolerance_px: 45.0          # Marker lớn nằm trong +-45px thì đủ điều kiện lock
+    big_lock_hold_s: 1.2                 # Phải giữ trong vùng lock 1.2s mới vào LOCK_BIG
+
+    big_fast_error_px: 120.0             # Lỗi lớn hơn mức này thì cho phép chạy gần max speed
+    big_slow_error_px: 35.0              # Lỗi nhỏ hơn mức này thì chạy chậm để tránh overshoot
+    big_max_body_speed_mps: 0.12        # Tốc độ body tối đa khi align mã lớn
+    big_min_body_speed_mps: 0.025         # Tốc độ body tối thiểu khi còn lỗi, không áp dụng trong deadband
+
+    vx_from_err_y_gain: -0.004           # Gain P tiến/lùi theo err_y của ảnh, dấu âm đã test đúng
+    vy_from_err_x_gain: 0.003            # Gain P trái/phải theo err_x của ảnh
+
+    # =========================
+    # DESCEND AFTER LOCK BIG
+    # =========================
+
+    enable_descend_after_lock_big: true  # Sau LOCK_BIG thì cho phép hạ xuống tìm mã nhỏ
+    descend_to_small_alt_m: 2.0          # Độ cao mục tiêu sau khi lock mã lớn, để bắt đầu tìm mã nhỏ
+    descend_speed_mps: 0.11              # Tốc độ hạ khi vẫn bám mã lớn
+    descend_alt_reached_tol_m: 0.20      # Sai số độ cao chấp nhận khi đạt descend_to_small_alt_m
+    descend_recenter_tolerance_px: 120.0 # Nếu mã lớn lệch quá mức này khi hạ thì quay lại ALIGN_BIG
+
+    # =========================
+    # SEARCH / ALIGN / LOCK SMALL MARKER
+    # =========================
+
+    small_search_timeout_s: 8.0          # Nếu tìm mã nhỏ quá 8s chưa thấy thì log warning và giữ hover
+    small_align_deadband_px: 15.0        # Deadband pixel cho mã nhỏ
+    small_lock_tolerance_px: 25.0        # Mã nhỏ nằm trong +-25px thì đủ điều kiện lock
+    small_lock_hold_s: 0.7               # Giữ mã nhỏ trong vùng lock 0.7s thì vào LOCK_SMALL
+
+    small_vx_from_err_y_gain: -0.0037    # Gain P tiến/lùi cho mã nhỏ
+    small_vy_from_err_x_gain: 0.0025     # Gain P trái/phải cho mã nhỏ
+    small_max_body_speed_mps: 0.055      # Tốc độ body tối đa khi align mã nhỏ
+    small_min_body_speed_mps: 0.012      # Tốc độ tối thiểu khi còn lỗi
+
+    # =========================
+    # OLD LANDING FLOW - DISABLED
+    # =========================
+    # Luồng mới không dùng LAND_ON_SMALL_ARUCO nữa.
+    # Giữ các biến này để tránh lỗi nếu code cũ còn đọc, nhưng tắt enable.
+    enable_land_after_lock_small: false
+
+    land_on_small_alt_m: 1.0
+    land_use_aruco_z: true
+    land_on_small_aruco_z_m: 0.90
+    land_aruco_z_max_err_px: 120.0
+    land_descend_speed_mps: 0.06
+    land_recenter_tolerance_px: 120.0
+    land_final_tolerance_px: 80.0
+    land_small_hold_s: 0.3
+
+    # =========================
+    # NEW DROP PAYLOAD + RTL FLOW
+    # =========================
+
+    enable_drop_after_lock_small: true   # Sau LOCK_SMALL thì hạ tới độ cao thả hàng rồi gọi servo
+    drop_alt_m: 1.5                      # Điều kiện chính: rel_alt_m <= 1.0m thì thả hàng
+    drop_use_aruco_z: true               # Bật điều kiện phụ bằng z_m từ ArUco ID40
+    drop_aruco_z_m: 1.45                 # Nếu z_m ID40 <= 0.90m thì có thể thả hàng
+    drop_aruco_z_max_err_px: 120.0       # Chỉ dùng z_m nếu err_x/err_y không vượt quá 120px
+
+    drop_descend_speed_mps: 0.06         # Tốc độ hạ trong pha DESCEND_TO_DROP_ALT
+    drop_recenter_tolerance_px: 125.0    # Nếu mã nhỏ lệch quá mức này khi descend drop thì quay lại ALIGN_SMALL
+    drop_final_tolerance_px: 80.0        # Chỉ hạ khi mã nhỏ nằm trong vùng +-80px
+    drop_hold_s: 0.3                     # Giữ trong vùng drop 0.3s trước khi gọi servo
+
+    servo_cmd_topic: "/servo_cmd"        # Topic gửi lệnh thả hàng tới servo node
+    drop_done_topic: "/drop_done"        # Topic nhận xác nhận thả hàng xong từ servo node
+    servo_cmd_payload: "DROP"            # Nội dung lệnh gửi cho servo node
+    drop_timeout_s: 7.0                  # Nếu không nhận drop_done sau 3s thì vẫn cho chuyển RTL để tránh treo
+
+    enable_rtl_after_drop: true          # Sau khi drop xong thì gửi RTL cho ArduPilot
+    rtl_cmd_topic: "/flight/cmd_rtl"     # Topic mission node gửi lệnh RTL tới flight_bridge_node
+    rtl_cmd_payload: "RTL"               # Nội dung lệnh RTL
+
+    # =========================
+    # YAW HOLD
+    # =========================
+
+    align_yaw_hold_resend_s: 1.0         # Chu kỳ gửi lại lệnh giữ yaw nếu có dùng hold yaw
+    align_yaw_rate_dps: 10.0             # Tốc độ yaw giới hạn, nhưng align hiện đang yaw_rate = 0
+
+    # =========================
+    # AUTO START
+    # =========================
+
+    auto_start_on_guided: true           # Gạt GUIDED + armed thì tự chạy mission
+    loop_hz: 10.0                        # Tần số vòng lặp mission manager

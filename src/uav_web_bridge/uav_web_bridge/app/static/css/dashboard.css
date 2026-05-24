@@ -1,0 +1,1366 @@
+.dashboard-page {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 20% 0%, rgba(34, 211, 238, 0.13), transparent 32%),
+    radial-gradient(circle at 82% 18%, rgba(52, 211, 153, 0.08), transparent 28%),
+    var(--bg);
+}
+
+.app-sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  padding: 22px;
+  border-right: 1px solid var(--line);
+  background: rgba(6, 10, 18, 0.82);
+  backdrop-filter: blur(18px);
+}
+
+.dashboard-brand {
+  min-height: 48px;
+}
+
+.side-nav {
+  display: grid;
+  gap: 10px;
+}
+
+.side-link {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 14px;
+  border: 1px solid transparent;
+  border-radius: 14px;
+  color: var(--muted);
+  font-weight: 750;
+  transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease;
+}
+
+.side-link:hover,
+.side-link.active {
+  color: var(--text);
+  border-color: rgba(34, 211, 238, 0.26);
+  background: rgba(34, 211, 238, 0.08);
+  transform: translateX(2px);
+}
+
+.sidebar-footer {
+  display: grid;
+  gap: 10px;
+  margin-top: auto;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.dashboard-shell {
+  min-width: 0;
+  padding: 22px;
+}
+
+.dashboard-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  margin: -22px -22px 22px;
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(7, 11, 19, 0.76);
+  backdrop-filter: blur(18px);
+}
+
+.dashboard-topbar h1 {
+  font-size: clamp(24px, 3vw, 38px);
+}
+
+.topbar-metrics {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.metric-pill,
+.live-chip,
+.phase-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.62);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.metric-pill strong,
+.live-chip,
+.phase-chip {
+  color: var(--text);
+}
+
+.status-ok {
+  border-color: rgba(52, 211, 153, 0.45);
+}
+
+.status-danger {
+  border-color: rgba(251, 113, 133, 0.45);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: minmax(320px, 1.15fr) minmax(320px, 0.85fr);
+  grid-auto-flow: dense;
+  gap: 18px;
+}
+
+.dash-card {
+  min-width: 0;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(145deg, rgba(15, 23, 42, 0.82), rgba(8, 13, 24, 0.62));
+  box-shadow: var(--shadow);
+}
+
+.dash-card:hover {
+  border-color: rgba(34, 211, 238, 0.26);
+}
+
+.card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.card-head h2 {
+  font-size: 20px;
+}
+
+.icon-btn {
+  min-width: 46px;
+  min-height: 38px;
+  padding: 0 12px;
+  background: rgba(34, 211, 238, 0.1);
+  color: var(--text);
+}
+
+.camera-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.camera-panel,
+.map-panel {
+  grid-column: 1 / 2;
+}
+
+.camera-frame {
+  position: relative;
+  min-height: 430px;
+  overflow: hidden;
+  border: 1px solid rgba(34, 211, 238, 0.24);
+  border-radius: var(--radius);
+  background: #020617;
+  box-shadow: inset 0 0 30px rgba(34, 211, 238, 0.08);
+}
+
+#camera-stream {
+  display: block;
+  width: 100%;
+  height: 430px;
+  object-fit: contain;
+  background: #000;
+}
+
+.camera-status-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  max-width: calc(100% - 24px);
+  padding: 8px 11px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.78);
+  color: #dbeafe;
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.camera-status-badge[data-state="streaming"] {
+  border-color: rgba(52, 211, 153, 0.34);
+}
+
+.camera-status-badge[data-state="error"] {
+  border-color: rgba(251, 113, 133, 0.42);
+}
+
+.camera-status-badge[data-state="paused"] .pulse-dot,
+.camera-status-badge[data-state="error"] .pulse-dot {
+  background: var(--red);
+  animation: none;
+}
+
+.camera-overlay {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.camera-overlay span {
+  padding: 7px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.18);
+  border-radius: 999px;
+  background: rgba(2, 6, 23, 0.76);
+  color: #dbeafe;
+  font-size: 13px;
+}
+
+.telemetry-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.telemetry-widget,
+.mission-grid > div,
+.system-grid > article {
+  min-height: 84px;
+  padding: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 16px;
+  background: rgba(2, 6, 23, 0.34);
+}
+
+.telemetry-widget.wide,
+.mission-goal {
+  grid-column: 1 / -1;
+}
+
+.telemetry-widget span,
+.mission-grid span,
+.system-grid span,
+.map-lists span {
+  display: block;
+  margin-bottom: 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.telemetry-widget strong,
+.mission-grid strong,
+.system-grid strong {
+  color: var(--text);
+  font-size: 18px;
+  overflow-wrap: anywhere;
+}
+
+.mission-grid,
+.system-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.progress-shell {
+  height: 10px;
+  overflow: hidden;
+  margin: 0 0 14px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+}
+
+.progress-fill {
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--cyan), var(--green));
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.42);
+  transition: width 320ms ease;
+}
+
+.mission-map {
+  width: 100%;
+  height: 520px;
+  overflow: hidden;
+  border: 1px solid rgba(34, 211, 238, 0.22);
+  border-radius: var(--radius);
+  background: #020617;
+}
+
+.map-lists {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.map-toast {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 1000;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 12px 14px;
+  border: 1px solid rgba(34, 211, 238, 0.28);
+  border-radius: 14px;
+  background: rgba(2, 6, 23, 0.88);
+  color: var(--text);
+  box-shadow: 0 14px 32px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transform: translateY(10px);
+  pointer-events: none;
+  transition: opacity 160ms ease, transform 160ms ease, border-color 160ms ease;
+}
+
+.map-toast.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.map-toast[data-level="ok"] {
+  border-color: rgba(52, 211, 153, 0.48);
+}
+
+.map-toast[data-level="warn"] {
+  border-color: rgba(251, 191, 36, 0.48);
+}
+
+.map-toast[data-level="error"] {
+  border-color: rgba(251, 113, 133, 0.52);
+}
+
+.map-lists > div {
+  min-height: 96px;
+  padding: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 16px;
+  background: rgba(2, 6, 23, 0.34);
+}
+
+.compact-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #dbeafe;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.log-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.filter-btn {
+  min-height: 34px;
+  padding: 0 12px;
+  background: rgba(15, 23, 42, 0.7);
+  color: var(--muted);
+}
+
+.filter-btn.active {
+  border-color: rgba(34, 211, 238, 0.42);
+  color: var(--text);
+  background: rgba(34, 211, 238, 0.12);
+}
+
+.log-box {
+  height: 310px;
+  overflow-y: auto;
+  padding: 12px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: var(--radius);
+  background: rgba(2, 6, 23, 0.66);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.log-line {
+  display: flex;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.08);
+}
+
+.log-line.is-hidden {
+  display: none;
+}
+
+.log-time {
+  flex: 0 0 auto;
+  color: #7dd3fc;
+}
+
+.log-info {
+  color: #dbeafe;
+}
+
+.log-warn {
+  color: var(--amber);
+}
+
+.log-ok {
+  color: var(--green);
+}
+
+.log-error {
+  color: var(--red);
+}
+
+.leaflet-container {
+  background: #020617;
+  color: #0f172a;
+}
+
+.leaflet-control-layers,
+.leaflet-popup-content-wrapper,
+.leaflet-popup-tip {
+  background: rgba(15, 23, 42, 0.95);
+  color: var(--text);
+  border: 1px solid rgba(34, 211, 238, 0.24);
+  box-shadow: var(--shadow);
+}
+
+.leaflet-control-layers {
+  border-radius: 14px;
+}
+
+.drone-live-icon {
+  filter: drop-shadow(0 0 12px rgba(34, 211, 238, 0.8));
+  transition: transform 550ms linear;
+}
+
+.mission-goal-icon {
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--green);
+  border-radius: 999px;
+  background: rgba(52, 211, 153, 0.2);
+  box-shadow: 0 0 18px rgba(52, 211, 153, 0.68);
+}
+
+.aruco-glow-marker {
+  stroke: var(--cyan);
+  filter: drop-shadow(0 0 6px rgba(34, 211, 238, 0.7));
+}
+
+.drone-track-line {
+  stroke-dasharray: 8 10;
+  animation: routeDash 14s linear infinite;
+}
+
+@keyframes routeDash {
+  to {
+    stroke-dashoffset: -90;
+  }
+}
+
+@media (max-width: 1220px) {
+  .dashboard-page {
+    grid-template-columns: 1fr;
+  }
+
+  .app-sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    overflow-x: auto;
+  }
+
+  .side-nav,
+  .sidebar-footer {
+    display: flex;
+    flex: 0 0 auto;
+  }
+
+  .dashboard-shell {
+    padding-top: 0;
+  }
+
+  .dashboard-topbar {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 980px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .camera-panel,
+  .map-panel {
+    grid-column: auto;
+  }
+}
+
+@media (max-width: 680px) {
+  .app-sidebar {
+    padding: 14px;
+  }
+
+  .dashboard-shell {
+    padding: 14px;
+  }
+
+  .dashboard-topbar {
+    align-items: flex-start;
+    flex-direction: column;
+    margin: -14px -14px 14px;
+    padding: 14px;
+  }
+
+  .topbar-metrics {
+    justify-content: flex-start;
+  }
+
+  .telemetry-grid,
+  .mission-grid,
+  .system-grid,
+  .map-lists {
+    grid-template-columns: 1fr;
+  }
+
+  .camera-frame,
+  #camera-stream {
+    height: 300px;
+    min-height: 300px;
+  }
+
+  .camera-actions {
+    justify-content: flex-start;
+  }
+
+  .mission-map {
+    height: 360px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .drone-track-line {
+    animation: none;
+  }
+}
+
+/* UAV operations console refresh */
+.dashboard-page {
+  --ops-bg: #06080d;
+  --ops-card: rgba(13, 17, 26, 0.88);
+  --ops-card-soft: rgba(255, 255, 255, 0.045);
+  --ops-border: rgba(255, 255, 255, 0.09);
+  --ops-border-strong: rgba(34, 211, 238, 0.28);
+  --ops-text: #f8fafc;
+  --ops-muted: #94a3b8;
+  --ops-cyan: #22d3ee;
+  --ops-green: #22c55e;
+  --ops-amber: #f59e0b;
+  --ops-red: #ef4444;
+  grid-template-columns: 248px minmax(0, 1fr);
+  background:
+    radial-gradient(circle at 18% 0%, rgba(34, 211, 238, 0.1), transparent 28%),
+    radial-gradient(circle at 86% 8%, rgba(34, 197, 94, 0.07), transparent 24%),
+    linear-gradient(180deg, #06080d, #080b12 52%, #05070b);
+  color: var(--ops-text);
+  overflow-x: hidden;
+}
+
+.dashboard-page * {
+  min-width: 0;
+}
+
+.app-sidebar {
+  background: rgba(5, 8, 14, 0.92);
+  border-right-color: var(--ops-border);
+  backdrop-filter: none;
+}
+
+.dashboard-shell {
+  padding: 18px;
+}
+
+.dashboard-topbar {
+  align-items: stretch;
+  gap: 16px;
+  margin: -18px -18px 18px;
+  padding: 14px 18px;
+  background: rgba(6, 8, 13, 0.94);
+  border-bottom-color: var(--ops-border);
+  backdrop-filter: none;
+}
+
+.topbar-title {
+  display: grid;
+  align-content: center;
+  gap: 8px;
+  min-width: min(360px, 100%);
+}
+
+.dashboard-topbar h1 {
+  font-size: clamp(24px, 2.4vw, 34px);
+  letter-spacing: -0.02em;
+}
+
+.readiness-strip {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 34px;
+  padding: 6px 10px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 999px;
+  background: rgba(15, 23, 42, 0.68);
+  color: var(--ops-muted);
+  font-size: 12px;
+}
+
+.readiness-strip strong {
+  color: var(--ops-text);
+}
+
+.readiness-dot {
+  width: 9px;
+  height: 9px;
+  flex: 0 0 auto;
+  border-radius: 999px;
+  background: var(--ops-amber);
+  box-shadow: 0 0 14px rgba(245, 158, 11, 0.5);
+}
+
+.readiness-strip[data-state="ready"] {
+  border-color: rgba(34, 197, 94, 0.42);
+  background: rgba(20, 83, 45, 0.22);
+}
+
+.readiness-strip[data-state="ready"] .readiness-dot {
+  background: var(--ops-green);
+  box-shadow: 0 0 14px rgba(34, 197, 94, 0.58);
+}
+
+.readiness-strip[data-state="warning"],
+.readiness-strip[data-state="degraded"] {
+  border-color: rgba(245, 158, 11, 0.42);
+  background: rgba(120, 53, 15, 0.24);
+}
+
+.readiness-strip[data-state="critical"],
+.readiness-strip[data-state="offline"] {
+  border-color: rgba(239, 68, 68, 0.45);
+  background: rgba(127, 29, 29, 0.26);
+}
+
+.readiness-strip[data-state="critical"] .readiness-dot,
+.readiness-strip[data-state="offline"] .readiness-dot {
+  background: var(--ops-red);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.58);
+}
+
+.topbar-metrics {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(82px, auto));
+  align-content: center;
+  gap: 8px;
+  margin-left: auto;
+}
+
+.metric-pill,
+.live-chip,
+.phase-chip {
+  min-height: 34px;
+  padding: 0 10px;
+  border-color: var(--ops-border);
+  background: rgba(255, 255, 255, 0.045);
+  color: var(--ops-muted);
+  font-size: 12px;
+}
+
+.metric-pill strong {
+  color: var(--ops-text);
+  font-size: 12px;
+}
+
+.metric-pill[data-state="ok"],
+.telemetry-widget[data-state="ok"],
+.system-grid article[data-state="ok"] {
+  border-color: rgba(34, 197, 94, 0.38);
+  background: rgba(20, 83, 45, 0.18);
+}
+
+.metric-pill[data-state="warn"],
+.telemetry-widget[data-state="warn"],
+.system-grid article[data-state="warn"] {
+  border-color: rgba(245, 158, 11, 0.38);
+  background: rgba(120, 53, 15, 0.18);
+}
+
+.metric-pill[data-state="bad"],
+.telemetry-widget[data-state="bad"],
+.system-grid article[data-state="bad"] {
+  border-color: rgba(239, 68, 68, 0.42);
+  background: rgba(127, 29, 29, 0.2);
+}
+
+.focus-view-btn {
+  min-height: 34px;
+  width: auto;
+  padding-inline: 12px;
+}
+
+.dashboard-grid {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  grid-auto-flow: row dense;
+  align-items: start;
+  gap: 16px;
+}
+
+.dash-card {
+  border-color: var(--ops-border);
+  border-radius: 20px;
+  background:
+    linear-gradient(145deg, rgba(255, 255, 255, 0.045), rgba(255, 255, 255, 0.018)),
+    var(--ops-card);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
+}
+
+.dash-card:hover {
+  border-color: rgba(34, 211, 238, 0.22);
+}
+
+.card-head h2 {
+  font-size: clamp(18px, 1.6vw, 22px);
+}
+
+.card-head span {
+  display: block;
+  margin-top: 5px;
+  color: var(--ops-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.camera-panel {
+  grid-column: span 7;
+}
+
+.map-panel {
+  grid-column: span 5;
+}
+
+.mission-panel {
+  grid-column: span 7;
+}
+
+.telemetry-panel {
+  grid-column: span 5;
+}
+
+.system-panel {
+  grid-column: span 5;
+}
+
+.log-panel {
+  grid-column: 1 / -1;
+}
+
+.primary-observer-card {
+  min-height: 0;
+}
+
+.camera-frame {
+  aspect-ratio: 16 / 9;
+  min-height: 0;
+  border-radius: 18px;
+  background:
+    linear-gradient(135deg, rgba(34, 211, 238, 0.08), transparent 35%),
+    #000;
+}
+
+#camera-stream {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  object-fit: contain;
+}
+
+.camera-actions .icon-btn {
+  min-height: 34px;
+  min-width: 0;
+  border-radius: 11px;
+  background: rgba(255, 255, 255, 0.055);
+  font-size: 12px;
+}
+
+.camera-overlay {
+  padding-top: 24px;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.42));
+}
+
+.camera-overlay span,
+.camera-status-badge {
+  background: rgba(2, 6, 23, 0.84);
+}
+
+.map-operation-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.map-operation-summary article {
+  min-height: 58px;
+  padding: 10px;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 14px;
+  background: rgba(2, 6, 23, 0.36);
+}
+
+.map-operation-summary span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--ops-muted);
+  font-size: 11px;
+}
+
+.map-operation-summary strong {
+  display: block;
+  color: var(--ops-text);
+  font-size: 12px;
+  line-height: 1.25;
+  overflow-wrap: anywhere;
+}
+
+.mission-map {
+  height: clamp(430px, 55vh, 620px);
+  border-radius: 18px;
+}
+
+.map-lists {
+  grid-template-columns: 1fr;
+}
+
+.map-lists > div {
+  min-height: auto;
+  max-height: 90px;
+  overflow: auto;
+}
+
+.telemetry-grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.telemetry-widget,
+.mission-grid > div,
+.system-grid > article {
+  min-height: 76px;
+  border-radius: 14px;
+  background: rgba(2, 6, 23, 0.34);
+}
+
+.telemetry-widget strong,
+.mission-grid strong,
+.system-grid strong,
+.marker-metrics dd {
+  font-size: clamp(15px, 1.2vw, 18px);
+}
+
+.battery-meter {
+  height: 6px;
+  overflow: hidden;
+  margin-top: 10px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.18);
+}
+
+.battery-meter span {
+  display: block;
+  width: 0%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--ops-red), var(--ops-amber), var(--ops-green));
+  transition: width 260ms ease;
+}
+
+.quality-badge {
+  display: inline-flex;
+  width: fit-content;
+  margin-top: 8px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--ops-muted);
+  font-size: 11px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.quality-badge[data-state="ok"] {
+  color: #bbf7d0;
+  background: rgba(34, 197, 94, 0.16);
+}
+
+.quality-badge[data-state="warn"] {
+  color: #fde68a;
+  background: rgba(245, 158, 11, 0.16);
+}
+
+.quality-badge[data-state="bad"] {
+  color: #fecaca;
+  background: rgba(239, 68, 68, 0.16);
+}
+
+.mission-timeline {
+  display: grid;
+  grid-template-columns: repeat(11, minmax(86px, 1fr));
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.mission-timeline li {
+  position: relative;
+  min-height: 52px;
+  padding: 10px 10px 10px 14px;
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 12px;
+  background: rgba(2, 6, 23, 0.32);
+  color: var(--ops-muted);
+  font-size: 11px;
+  font-weight: 850;
+}
+
+.mission-timeline li::before {
+  position: absolute;
+  top: 14px;
+  left: 6px;
+  width: 4px;
+  height: 24px;
+  border-radius: 999px;
+  content: "";
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.mission-timeline li.is-done {
+  border-color: rgba(34, 197, 94, 0.26);
+  color: #bbf7d0;
+}
+
+.mission-timeline li.is-active {
+  border-color: rgba(34, 211, 238, 0.52);
+  background: rgba(8, 47, 73, 0.34);
+  color: #e0faff;
+  box-shadow: 0 0 0 1px rgba(34, 211, 238, 0.1);
+}
+
+.mission-timeline li.is-active::before {
+  background: var(--ops-cyan);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.62);
+}
+
+.mission-summary-grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-bottom: 12px;
+}
+
+.mission-summary-grid .mission-goal {
+  grid-column: 1 / -1;
+}
+
+.marker-alignment-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.marker-card {
+  padding: 14px;
+  border: 1px solid rgba(148, 163, 184, 0.14);
+  border-radius: 16px;
+  background: rgba(2, 6, 23, 0.38);
+}
+
+.marker-card[data-state="seen"] {
+  border-color: rgba(34, 197, 94, 0.32);
+}
+
+.marker-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.marker-card-head span,
+.marker-card-head em,
+.marker-metrics dt {
+  color: var(--ops-muted);
+  font-size: 12px;
+  font-style: normal;
+}
+
+.marker-card-head strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--ops-text);
+}
+
+.alignment-scope {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  width: min(168px, 100%);
+  margin: 0 auto 12px;
+  overflow: hidden;
+  border: 1px solid rgba(34, 211, 238, 0.16);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at center, rgba(34, 211, 238, 0.13) 0 2px, transparent 3px),
+    radial-gradient(circle at center, transparent 0 36%, rgba(148, 163, 184, 0.08) 37% 38%, transparent 39%),
+    rgba(2, 6, 23, 0.44);
+}
+
+.alignment-axis {
+  position: absolute;
+  background: rgba(148, 163, 184, 0.22);
+}
+
+.alignment-axis.x-axis {
+  top: 50%;
+  left: 10%;
+  right: 10%;
+  height: 1px;
+}
+
+.alignment-axis.y-axis {
+  top: 10%;
+  bottom: 10%;
+  left: 50%;
+  width: 1px;
+}
+
+.alignment-dot {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.82);
+  border-radius: 999px;
+  background: var(--ops-amber);
+  box-shadow: 0 0 18px rgba(245, 158, 11, 0.62);
+  transform: translate(-50%, -50%);
+  transition: transform 220ms ease, background 220ms ease, box-shadow 220ms ease, opacity 220ms ease;
+}
+
+.marker-card[data-state="seen"] .alignment-dot {
+  background: var(--ops-green);
+  box-shadow: 0 0 18px rgba(34, 197, 94, 0.62);
+}
+
+.marker-card[data-state="missing"] .alignment-dot {
+  opacity: 0.35;
+  background: var(--ops-red);
+  box-shadow: none;
+}
+
+.marker-metrics {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+}
+
+.marker-metrics div {
+  padding: 9px;
+  border: 1px solid rgba(148, 163, 184, 0.1);
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.marker-metrics dt,
+.marker-metrics dd {
+  margin: 0;
+}
+
+.marker-metrics dd {
+  color: var(--ops-text);
+  font-weight: 850;
+  overflow-wrap: anywhere;
+}
+
+.system-grid article {
+  display: grid;
+  align-content: center;
+  position: relative;
+  padding-left: 34px;
+}
+
+.system-grid article::before {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  content: "";
+  background: rgba(148, 163, 184, 0.45);
+  transform: translateY(-50%);
+}
+
+.system-grid article[data-state="ok"]::before {
+  background: var(--ops-green);
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.58);
+}
+
+.system-grid article[data-state="bad"]::before {
+  background: var(--ops-red);
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.58);
+}
+
+.log-panel {
+  padding-bottom: 14px;
+}
+
+.log-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.log-box {
+  height: 168px;
+}
+
+.log-panel.is-expanded .log-box {
+  height: min(48vh, 420px);
+}
+
+.log-line {
+  align-items: flex-start;
+}
+
+.operator-focus .app-sidebar,
+.operator-focus .telemetry-panel,
+.operator-focus .system-panel,
+.operator-focus .log-panel {
+  display: none;
+}
+
+.operator-focus {
+  grid-template-columns: 1fr;
+}
+
+.operator-focus .dashboard-grid {
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+}
+
+.operator-focus .camera-panel {
+  grid-column: span 7;
+}
+
+.operator-focus .map-panel {
+  grid-column: span 5;
+}
+
+.operator-focus .mission-panel {
+  grid-column: 1 / -1;
+}
+
+@media (max-width: 1320px) {
+  .topbar-metrics {
+    grid-template-columns: repeat(4, minmax(92px, auto));
+  }
+
+  .camera-panel,
+  .map-panel,
+  .mission-panel,
+  .telemetry-panel,
+  .system-panel {
+    grid-column: 1 / -1;
+  }
+
+  .mission-map {
+    height: clamp(390px, 52vh, 560px);
+  }
+}
+
+@media (max-width: 1220px) {
+  .dashboard-page {
+    grid-template-columns: 1fr;
+  }
+
+  .app-sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 35;
+    height: auto;
+    flex-direction: row;
+    align-items: center;
+    gap: 12px;
+    overflow-x: auto;
+    padding: 12px 14px;
+    border-right: 0;
+    border-bottom: 1px solid var(--ops-border);
+  }
+
+  .side-link {
+    min-height: 38px;
+    white-space: nowrap;
+  }
+
+  .sidebar-footer .btn {
+    width: auto;
+    min-height: 38px;
+  }
+
+  .dashboard-shell {
+    padding-top: 0;
+  }
+
+  .dashboard-topbar {
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .dashboard-topbar {
+    flex-direction: column;
+  }
+
+  .topbar-metrics {
+    width: 100%;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-left: 0;
+  }
+
+  .metric-pill,
+  .focus-view-btn {
+    justify-content: center;
+    width: 100%;
+  }
+
+  .marker-alignment-grid,
+  .mission-summary-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .telemetry-grid,
+  .system-grid,
+  .map-operation-summary {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .mission-timeline {
+    grid-template-columns: repeat(11, minmax(104px, 1fr));
+  }
+}
+
+@media (max-width: 680px) {
+  .dashboard-page {
+    display: block;
+  }
+
+  .dashboard-shell {
+    padding: 12px;
+  }
+
+  .dashboard-topbar {
+    margin: 0 -12px 12px;
+    padding: 12px;
+  }
+
+  .topbar-metrics,
+  .telemetry-grid,
+  .system-grid,
+  .map-operation-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .camera-frame {
+    aspect-ratio: 4 / 3;
+  }
+
+  .camera-actions {
+    justify-content: flex-start;
+  }
+
+  .camera-actions .icon-btn,
+  .log-actions .btn {
+    width: 100%;
+  }
+
+  .mission-map {
+    height: clamp(320px, 48vh, 420px);
+  }
+
+  .map-lists {
+    grid-template-columns: 1fr;
+  }
+
+  .dash-card {
+    padding: 14px;
+    border-radius: 16px;
+  }
+
+  .card-head {
+    flex-direction: column;
+  }
+
+  .mission-timeline {
+    grid-template-columns: 1fr;
+    overflow: visible;
+  }
+
+  .mission-timeline li {
+    min-height: 42px;
+  }
+
+  .log-actions {
+    width: 100%;
+  }
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .dash-card {
+    transition: border-color 160ms ease, transform 160ms ease;
+  }
+
+  .dash-card:hover {
+    transform: translateY(-1px);
+  }
+}

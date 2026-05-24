@@ -1,0 +1,6 @@
+pymavlink
+pyserial
+pyyaml
+flask
+flask-socketio
+opencv-python-headless

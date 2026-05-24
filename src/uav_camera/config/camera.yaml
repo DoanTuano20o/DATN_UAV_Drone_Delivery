@@ -1,0 +1,9 @@
+camera_node:
+  ros__parameters:
+    camera_index: 0
+
+    width: 640
+    height: 480
+    fps: 15
+    publish_compressed: true
+    jpeg_quality: 70

@@ -1,0 +1,20 @@
+aruco_detector_node:
+  ros__parameters:
+    image_topic: /camera/image/compressed
+    annotated_topic: /vision/image_annotated/compressed
+    detections_topic: /vision/aruco_detections_json
+
+    aruco_dict_name: DICT_4X4_1000
+
+    big_marker_id: 150
+    big_marker_size_m: 0.70
+    small_marker_id: 40
+    small_marker_size_m: 0.08
+
+    calib_path: /media/orangepi/nvme_data/home/DATN_UAV/src/uav_vision/calibration/camera_calibration_charuco.yaml
+
+    draw_axes: false
+    jpeg_quality: 60
+
+    process_rate_hz: 12.0
+    annotated_rate_hz: 4.0
