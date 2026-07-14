@@ -8,7 +8,7 @@ Flask-SocketIO Web Dashboard, GPS mission and servo payload drop.
 - ROS2 Humble
 - ArduPilot / MAVLink
 - Orange Pi 5 Pro
-- Flywoo Goku H743 / Pixhawk-class FC
+- Flywoo Goku H743 
 - OpenCV ArUco
 - Flask + Flask-SocketIO
 - PCA9685 + MG996R servo
